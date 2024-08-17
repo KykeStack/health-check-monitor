@@ -36,8 +36,8 @@ Check more configuration options in the conf.json [distribution file]
 ## Run locally
 
 ```bash
-go get gitlab.com/skyvet/health-check-monitor
-cd $GOPATH/src/gitlab.com/skyvet/health-check-monitor
+go get https://github.com/KykeStack/health-check-monitor
+cd $GOPATH/src/health-check-monitor
 go install
 curl https://github.com/KykeStack/health-check-monitor.git/raw/master/config.json.dist -o config.json
 health-check-monitor
@@ -59,7 +59,7 @@ Or just go [check manually the list] and then run docker
 docker run -d \
 -v "$(pwd)/config.json:/config.json" \
 -p "8001:8001" \
-git git+https://github.com/KykeStack/health-check-monitor.git:<insert here latest tag> -config /config.json
+git https://github.com/KykeStack/health-check-monitor.git:<insert here latest tag> -config /config.json
 ```
 
 ## Ping it!
