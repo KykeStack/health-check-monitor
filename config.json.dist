@@ -1,0 +1,40 @@
+{
+  "server": {
+    "port": 8001,
+    "endpoint": "/status"
+  },
+  "checker": {
+    "interval": 30,
+    "timeout": 2
+  },
+  "urlMonitors": [
+    {
+      "name": "Google",
+      "url": "https://www.google.com"
+    }
+  ],
+  "slack": {
+    "enabled": false,
+    "webhookUrl": "<your slack webhook url here>",
+    "messages": {
+      "healthy": "{{.Name}} is up!",
+      "unhealthy": "{{.Name}} is down!"
+    }
+  },
+  "twilio": {
+    "sms": {
+      "enabled": false,
+      "accountSid": "<your twilio accound sid>",
+      "authToken": "<your twilio auth token>",
+      "from": "<a twilio active number>",
+      "to": [
+        "<your full phone number>"
+      ],
+      "body": {
+        "healthy": "{{.Name}} is up!",
+        "unhealthy": "{{.Name}} is down!"
+      },
+      "timeout": 2
+    }
+  }
+}
