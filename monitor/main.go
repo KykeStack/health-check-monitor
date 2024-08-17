@@ -7,9 +7,13 @@ const THRESHOLD = 5
 
 // URLMonitor This struct handles status of each url
 type URLMonitor struct {
-	Name   string
-	Status []bool
-	URL    string
+	Name          string
+	Status        []bool
+	URL           string
+	Authetication struct {
+		Header string
+		Value  string
+	}
 }
 
 func (monitor *URLMonitor) PushStatus(status bool) {
