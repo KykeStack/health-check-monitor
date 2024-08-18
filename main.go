@@ -19,7 +19,7 @@ func main() {
 	// Find .env file
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+		log.Print("Error loading .env file: %s", err)
 	}
 
 	configFile := flag.String("config", "config.json", "Path to the configuration file")

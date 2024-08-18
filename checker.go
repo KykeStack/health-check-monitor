@@ -110,13 +110,8 @@ func fetchMonitorURL(client *http.Client, URLMonitor *monitor.URLMonitor) (int, 
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-
-	if err != nil {
 		return 0, fmt.Errorf("cannot fetch monitor %s: %v", URLMonitor.Name, err)
 	}
-
+	defer resp.Body.Close()
 	return resp.StatusCode, nil
 }
