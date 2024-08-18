@@ -16,6 +16,12 @@ type URLMonitor struct {
 	}
 }
 
+type URLMonitorSafe struct {
+	Name   string
+	Status []bool
+	URL    string
+}
+
 func (monitor *URLMonitor) PushStatus(status bool) {
 	monitor.Status = append(monitor.Status, status)
 

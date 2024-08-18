@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/KykeStack/health-check-monitor/config"
 	"github.com/KykeStack/health-check-monitor/listener"
-	. "github.com/KykeStack/health-check-monitor/monitor"
+	"github.com/KykeStack/health-check-monitor/monitor"
 )
 
 var statusString = map[bool]string{
@@ -23,11 +24,11 @@ var validStatusCodes = map[int]bool{
 
 type Checker struct {
 	Config      config.Config
-	URLMonitors []*URLMonitor
+	URLMonitors []*monitor.URLMonitor
 	Listeners   []listener.StatusChangeListener
 }
 
-func (c *Checker) RegisterProvider(URLMonitor *URLMonitor) error {
+func (c *Checker) RegisterProvider(URLMonitor *monitor.URLMonitor) error {
 	if URLMonitor.Name == "" {
 		return fmt.Errorf("monitor is missing name")
 	}
@@ -95,8 +96,23 @@ func (c *Checker) checkAll() {
 	}
 }
 
-func fetchMonitorURL(client *http.Client, URLMonitor *URLMonitor) (int, error) {
-	resp, err := client.Get(URLMonitor.URL)
+func fetchMonitorURL(client *http.Client, URLMonitor *monitor.URLMonitor) (int, error) {
+	req, err := http.NewRequest("GET", URLMonitor.URL, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if URLMonitor.Authetication.Header != "" && URLMonitor.Authetication.Value != "" {
+		headerValue := os.Getenv(URLMonitor.Authetication.Value)
+		req.Header.Add(URLMonitor.Authetication.Header, headerValue)
+	}
+
+	// Send the request
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
 
 	if err != nil {
 		return 0, fmt.Errorf("cannot fetch monitor %s: %v", URLMonitor.Name, err)

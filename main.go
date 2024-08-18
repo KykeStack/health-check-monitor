@@ -21,10 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
-	// Getting and using a value from .env
-	greeting := os.Getenv("GREETING")
 
-	fmt.Println(greeting)
 	configFile := flag.String("config", "config.json", "Path to the configuration file")
 
 	flag.Parse()
@@ -61,8 +58,9 @@ func main() {
 
 	for _, provider := range config.URLMonitors {
 		err = checker.RegisterProvider(&monitor.URLMonitor{
-			Name: provider.Name,
-			URL:  provider.URL,
+			Name:          provider.Name,
+			URL:           provider.URL,
+			Authetication: provider.Authetication,
 		})
 
 		if err != nil {
@@ -84,18 +82,35 @@ func main() {
 }
 
 type Response struct {
-	Providers   []*monitor.URLMonitor `json:"providers"`
-	Version     string                `json:"version"`
-	Environment string                `json:"environment"`
+	Providers   []*monitor.URLMonitorSafe `json:"providers"`
+	Version     string                    `json:"version"`
+	Environment string                    `json:"environment"`
 }
 
 type StatusHandler struct {
 	Checker *Checker
 }
 
+func toURLMonitorSafe(m *monitor.URLMonitor) *monitor.URLMonitorSafe {
+	return &monitor.URLMonitorSafe{
+		Name:   m.Name,
+		Status: m.Status,
+		URL:    m.URL,
+	}
+}
+
 func (sh *StatusHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	var newURLMonitor []*monitor.URLMonitorSafe = []*monitor.URLMonitorSafe{}
+
+	// Iterate over slice2 and append to slice1 based on a condition
+	for _, value := range sh.Checker.URLMonitors {
+		// Check if the element should be appended (e.g., avoid duplicates)
+		safeMonitor := toURLMonitorSafe(value)
+		newURLMonitor = append(newURLMonitor, safeMonitor)
+	}
+
 	response := Response{
-		Providers: sh.Checker.URLMonitors,
+		Providers: newURLMonitor,
 		Version:   os.Getenv("APPLICATION_VERSION"),
 	}
 
